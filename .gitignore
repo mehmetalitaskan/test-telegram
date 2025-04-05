@@ -1,0 +1,38 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Çevresel değişkenler
+.env
+
+# Virtual environment
+venv/
+ENV/
+env/
+
+# Telegram session dosyaları
+*.session
+*.session-journal
+
+# IDE dosyaları
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
