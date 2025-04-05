@@ -1,12 +1,14 @@
 # Telegram Group Manager API
 
-Bu proje, Telegram grupları oluşturmak, davet bağlantıları göndermek ve gruplar içerisinde mesajlar göndermek için bir REST API sunar. Telethon kütüphanesi kullanılarak geliştirilmiştir.
+Bu proje, Telegram grupları oluşturmak, davet bağlantıları göndermek, gruplar içerisinde mesajlar göndermek ve grup mesajlarını dinlemek için bir REST API sunar. Telethon kütüphanesi kullanılarak geliştirilmiştir.
 
 ## Özellikler
 
 - Telegram grupları oluşturma
 - Gruplara davet bağlantıları oluşturma ve gönderme
 - Belirli kullanıcılardan gönderilmiş gibi görünen mesajlar gönderme
+- Birden fazla Telegram grubunu eş zamanlı dinleme
+- Gruplarda gönderilen mesajları takip etme
 - REST API aracılığıyla tüm işlemleri otomatikleştirme
 
 ## Kurulum
@@ -95,15 +97,125 @@ API, varsayılan olarak `http://127.0.0.1:5000` adresinde çalışır ve şu end
 }
 ```
 
+### 3. Grup Mesajlarını Dinleme API
+
+**Endpoint:** `/listen-to-group`
+
+**Method:** POST
+
+**Body:**
+```json
+{
+  "group_links": [
+    "https://t.me/+abcdef123456",
+    "https://t.me/ikincigrup"
+  ]
+}
+```
+
+**Alternatif (Tek Grup İçin):**
+```json
+{
+  "group_link": "https://t.me/+abcdef123456"
+}
+```
+
+**Cevap:**
+```json
+{
+  "success": true,
+  "groups": [
+    {
+      "id": 1234567890,
+      "title": "Grup Adı",
+      "link": "https://t.me/+abcdef123456"
+    },
+    {
+      "id": 1234567891,
+      "title": "İkinci Grup",
+      "link": "https://t.me/ikincigrup"
+    }
+  ],
+  "errors": [],
+  "message": "Now listening to 2 group(s)"
+}
+```
+
+### 4. Grup Mesajlarını Alma API
+
+**Endpoint:** `/get-group-messages`
+
+**Method:** POST
+
+**Body:**
+```json
+{
+  "group_link": "https://t.me/+abcdef123456"
+}
+```
+
+**Cevap:**
+```json
+{
+  "success": true,
+  "group": {
+    "id": 1234567890,
+    "title": "Grup Adı",
+    "link": "https://t.me/+abcdef123456"
+  },
+  "messages": [
+    {
+      "id": 1001,
+      "text": "Merhaba, nasılsınız?",
+      "date": "2025-04-05T14:30:45",
+      "sender": {
+        "id": 123456789,
+        "first_name": "Mehmet",
+        "last_name": "Yılmaz",
+        "username": "mehmet_yilmaz",
+        "phone": null
+      }
+    }
+  ]
+}
+```
+
+### 5. Grup Dinlemeyi Durdurma API
+
+**Endpoint:** `/stop-listening`
+
+**Method:** POST
+
+**Body:**
+```json
+{
+  "group_link": "https://t.me/+abcdef123456"
+}
+```
+
+**Cevap:**
+```json
+{
+  "success": true,
+  "message": "Stopped listening to group: Grup Adı"
+}
+```
+
 ## İlk Kimlik Doğrulama
 
 API'yi ilk kez çalıştırdığınızda, session oluşturmak için kimlik doğrulama yapmanız gerekir:
 
 ```bash
-python telegram_api.py
+python authenticate_telegram.py
 ```
 
-Eğer `telegram_session.session` dosyası mevcut değilse, konsol üzerinden Telegram'a giriş yapmanız ve telefonunuza gelen kodu girmeniz istenecektir.
+Bu script, telefonunuza gelen doğrulama kodunu isteyecek ve hem ana istemci hem de dinleyici istemci için gerekli oturum dosyalarını oluşturacaktır.
+
+Ardından API'yi çalıştırabilirsiniz:
+
+```bash
+python telegram_api.py
+```
 
 ## Notlar
 
